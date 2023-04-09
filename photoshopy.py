@@ -75,11 +75,6 @@ class Photoshopy:
         return os.path.isfile(full_path)
 
 
-    def parse_datetime(self, dt_str):
-        if isinstance(dt_str, datetime):
-            return dt_str
-        return datetime.strptime(dt_str, '%Y-%m-%d %H:%M:%S')
-
     def readTable(self, path):
         wb = openpyxl.load_workbook(filename=path)
         print('Lendo tabela.')
@@ -94,21 +89,10 @@ class Photoshopy:
                 array.append({"name": d[0], "year": rounded_years})
         return array
     
-    def readTable2(self, path):
-        wb = openpyxl.load_workbook(filename=path)
-        print('Reading Excel')
-        data_column = wb['Página1']['B']
-        date1 = datetime(2023, 1, 1, 0, 0)
-        array = [(row.offset(column=-1).value, math.ceil((row.value - date1).days / 365.25))
-                for row in data_column if isinstance(row.value, datetime)]
-        return array
-
     def get_individual_artwork(self, psd_path, filename, name, year_quantity):
             print("Arte " + name + " em andamento.")
             self.jpeg_path = os.path.abspath('./src/export')
-            # Define o caminho completo para o arquivo JPEG
             year_word = "ANOS" if int(year_quantity) > 1 else "ANO"
-            jpeg_full_path = os.path.abspath(f"./src/export/{filename.upper()}-{year_quantity}-{year_word}.jpg")
             # Verifica se o arquivo PSD pode ser aberto
             if not self.openPSD(os.path.abspath(psd_path)):
                 return
@@ -119,7 +103,7 @@ class Photoshopy:
             self.updateLayerText("NAME", name.upper()):
                 
                 # Exporta o arquivo JPEG
-                self.exportJPEG(jpeg_full_path, self.jpeg_path)
+                self.exportJPEG(name+".jpg", self.jpeg_path)
 
                 # Exibe uma mensagem indicando que o processo foi concluído com sucesso
                 print("Arte criada com sucesso!")
